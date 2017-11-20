@@ -94,6 +94,12 @@ def add_title(imdb_id):
 
     return render_template('complete.html')
 
+@app.route('/transfer-complete/<username>/<int:title_file_id>/<imdb_id>')
+def transfer_complete(username, title_file_id, imdb_id):
+    print(request.form)
+    return(200)
+    file_to_episode(username, file_id, imdb_id, title_file_id)
+
 def get_relevant_torrent(torrents, seasons_head):
     torrent_dict = {}
 
