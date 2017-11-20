@@ -290,8 +290,8 @@ def file_to_episode(username, file_id, imdb_id, title_file_id):
     season_file = find_or_create_file(client.File.list(parent_id=title_file_id), "Season " + season, title_file)
 
     files = client.File.list(parent_id=file_id)
-    videos = [file for file in files if file.file_type == 'VIDEO' and re.search('S[0-9]{2}E[0-9]{2}', file.name)]
-    ep_key = [re.search('S[0-9]{2}E[0-9]{2}', video.name).group(0) for video in videos]
+    videos = [file for file in files if file.file_type == 'VIDEO' and re.search('S[0-9]{2}E[0-9]{2}', file.name.upper())]
+    ep_key = [re.search('S[0-9]{2}E[0-9]{2}', video.name.upper()).group(0) for video in videos]
 
     cursor = db.execute('select episode_denormalized, episode_title from episode where title_imdb_id=?', [imdb_id]).fetchall()
     episode_dict = dict([(r[0], r[0][4:6] + ' - ' + r[1]) for r in cursor])
