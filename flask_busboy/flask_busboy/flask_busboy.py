@@ -96,9 +96,8 @@ def add_title(imdb_id):
 
 @app.route('/transfer-complete/<username>/<int:title_file_id>/<imdb_id>', methods = ['POST'])
 def transfer_complete(username, title_file_id, imdb_id):
-    print(request.form)
-    return(200)
-    file_to_episode(username, file_id, imdb_id, title_file_id)
+    file_to_episode(username, request.form['file_id'], imdb_id, title_file_id)
+    return('Thank you sir')
 
 def get_relevant_torrent(torrents, seasons_head):
     torrent_dict = {}
