@@ -1,0 +1,3 @@
+graft flask_busboy/templates
+graft flask_busboy/static
+include flask_busboy/schema.sql

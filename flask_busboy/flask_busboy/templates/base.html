@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Busboy</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.0/examples/cover/cover.css" rel="stylesheet">
+
+    <link href="/static/style.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <header class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand"><a href="/" style="text-decoration: none;">busboy</a></h3>
+              <nav class="nav nav-masthead">
+                <!--<a class="nav-link active" href="#">Home</a>-->
+                  {% if session['logged_in'] %}
+                  <a class="nav-link active" href="#">{{ session['username'] }}</a>
+                    <a class="nav-link" href="/logout">Logout</a>
+
+                  {% else %}
+                    <a class="nav-link" href="/register">Signup</a>
+                    <a class="nav-link" href="/login">Login</a>
+                  {% endif %}
+              </nav>
+            </div>
+          </header>
+
+
+          <main role="main" class="inner cover">
+          {% block body %}
+          {% endblock %}
+          </main>
+
+          <footer class="mastfoot">
+            <div class="inner">
+              <p>File searching and organizing for <a href="https://put.io">put.io</a>, by <a href="https://twitter.com/refik">@refik</a>.</p>
+            </div>
+          </footer>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="https://getbootstrap.com/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script>
+    <script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
