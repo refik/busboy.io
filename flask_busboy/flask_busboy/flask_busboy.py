@@ -107,7 +107,7 @@ def transfer_complete(username, title_file_id, imdb_id):
 
 def get_relevant_torrent(torrents, seasons_head):
     if seasons_head == None:
-        return [torrents[0]]
+        return [torrents[0]['download']]
 
     torrent_dict = {}
 
