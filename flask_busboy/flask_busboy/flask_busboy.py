@@ -61,10 +61,16 @@ def search_title_omdb(title):
     return title_list[:5]
 
 def get_title_omdb(imdb_id):
-    response = requests.get("https://www.omdbapi.com", params={
-        'apikey': '31eec4b0',
-        'i': imdb_id
-    })
+    try:
+        response = requests.get("https://www.omdbapi.com", params={
+            'apikey': '31eec4b0',
+            'i': imdb_id
+        }, timeout=3)
+    except:
+        response = requests.get("https://www.omdbapi.com", params={
+            'apikey': '31eec4b0',
+            'i': imdb_id
+        }, timeout=3)
 
     return response.json()
 
