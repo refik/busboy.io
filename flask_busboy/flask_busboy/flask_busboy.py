@@ -43,13 +43,13 @@ def close_db(error):
 def search_title_omdb(title):
     try:
         response = requests.get("https://www.omdbapi.com", params={
-            'apikey': '31eec4b0',
+            'apikey': 'e2605a26',
             's': title
         }, timeout=3)
     except:
         time.sleep(2)
         response = requests.get("https://www.omdbapi.com", params={
-            'apikey': '31eec4b0',
+            'apikey': 'e2605a26',
             's': title
         }, timeout=6)
 
@@ -69,12 +69,12 @@ def search_title_omdb(title):
 def get_title_omdb(imdb_id):
     try:
         response = requests.get("https://www.omdbapi.com", params={
-            'apikey': '31eec4b0',
+            'apikey': 'e2605a26',
             'i': imdb_id
         }, timeout=3)
     except:
         response = requests.get("https://www.omdbapi.com", params={
-            'apikey': '31eec4b0',
+            'apikey': 'e2605a26',
             'i': imdb_id
         }, timeout=6)
 
@@ -241,13 +241,17 @@ def initdb_command():
     print('Initialized the database.')
 
 
-def get_torrent(imdb_id, retry=False, token=None):
-    if token == None:
-        token = requests.get('https://torrentapi.org/pubapi_v2.php?get_token=get_token', timeout=6).json()['token']
-        time.sleep(2)
+def renew_rarbg_token():
+    token = requests.get('https://torrentapi.org/pubapi_v2.php?get_token=get_token', timeout=6).json()['token']
+    time.sleep(2)
+    g.token = token
+
+def get_torrent(imdb_id, retry=False):
+    if g.get('token', None)== None:
+        renew_rarbg_token()
 
     response = requests.get('https://torrentapi.org/pubapi_v2.php', params={
-        'token': token,
+        'token': g.token,
         'mode': 'search',
         'search_imdb': imdb_id,
         'limit': '100',
@@ -255,9 +259,14 @@ def get_torrent(imdb_id, retry=False, token=None):
     }, timeout=6)
 
     json = response.json()
+
+    if 'error_code' in json and json['error_code'] == 4:
+        renew_rarbg_token()
+        return get_torrent(imdb_id)
+
     if 'torrent_results' not in json and not retry:
         time.sleep(2)
-        return get_torrent(imdb_id, True, token)
+        return get_torrent(imdb_id, True)
 
     if 'torrent_results' not in json:
         return []
@@ -272,7 +281,7 @@ def get_seasons(imdb_id, seasons):
         season_padded = format(int(season), '02')
 
         response = requests.get("https://www.omdbapi.com", params={
-            'apikey': '31eec4b0',
+            'apikey': 'e2605a26',
             'i': imdb_id,
             'Season': season
         }, timeout=6).json()
