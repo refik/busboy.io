@@ -76,8 +76,9 @@ def get_title_omdb(imdb_id):
 
 @app.route('/title/<imdb_id>')
 def show_title(imdb_id):
-    if not session.get('logged_in'):
-        return redirect(url_for('register'))
+    if not session.get('logged_in') or not session.get('rotated2'):
+        session.pop('logged_in')
+        return redirect(url_for('login'))
 
     title = get_title_omdb(imdb_id)
     return render_template('title.html', title=title)
@@ -158,15 +159,6 @@ def search_title():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
-            error = 'Invalid username'
-        elif request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid password'
-        else:
-            session['logged_in'] = True
-            flash('You were logged in')
-            return redirect(url_for('show_entries'))
-
         db = get_db()
         cur = db.execute('select password from user where username=?',
                    [request.form['username']])
@@ -176,6 +168,7 @@ def login():
             password = pass_proxy[0]
             if password == request.form['password']:
                 session['logged_in'] = True
+                session['rotated2'] = True
                 session['username'] = request.form['username']
                 return redirect('/')
         else:
