@@ -220,9 +220,11 @@ def initdb_command():
     print('Initialized the database.')
 
 
-def get_torrent(imdb_id):
-    token = requests.get('https://torrentapi.org/pubapi_v2.php?get_token=get_token').json()['token']
-    time.sleep(1)
+def get_torrent(imdb_id, retry=False, token=None):
+    if token == None:
+        token = requests.get('https://torrentapi.org/pubapi_v2.php?get_token=get_token').json()['token']
+        time.sleep(2)
+
     response = requests.get('https://torrentapi.org/pubapi_v2.php', params={
         'token': token,
         'mode': 'search',
@@ -231,7 +233,12 @@ def get_torrent(imdb_id):
         'sort': 'seeders'
     })
 
-    torrents = response.json()['torrent_results']
+    json = response.json()
+    if 'torrent_results' not in json and not retry:
+        time.sleep(2)
+        return get_torrent(imdb_id, True, token)
+
+    torrents = json['torrent_results']
     return torrents
 
 def get_seasons(imdb_id, seasons):
