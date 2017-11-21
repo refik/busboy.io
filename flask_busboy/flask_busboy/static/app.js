@@ -15,10 +15,10 @@ $("#add-to-transfers").click(function(event){
         $(this).attr("href", "/add/" + title_id)
     } else {
         if(seasons == '') {
-            alert('Please select some seasons')
-            return()
+            alert('Please select some seasons');
+        } else {
+            $(this).attr("href", "/add/" + title_id + "?seasons=" + seasons)
         }
-        $(this).attr("href", "/add/" + title_id + "?seasons=" + seasons)
     }
 
 })

@@ -1,0 +1,4 @@
+flask_busboy.db
+.idea/
+flask_busboy.egg-info/
+__pycache__/

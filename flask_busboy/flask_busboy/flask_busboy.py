@@ -5,6 +5,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 import requests
 import putiopy
+import time
 
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , flask_busboy.py
@@ -221,6 +222,7 @@ def initdb_command():
 
 def get_torrent(imdb_id):
     token = requests.get('https://torrentapi.org/pubapi_v2.php?get_token=get_token').json()['token']
+    time.sleep(1)
     response = requests.get('https://torrentapi.org/pubapi_v2.php', params={
         'token': token,
         'mode': 'search',
@@ -243,6 +245,8 @@ def get_seasons(imdb_id, seasons):
             'Season': season
         }).json()
 
+        time.sleep(0.5)
+        
         if 'Episodes' in response.keys():
             for episode in response['Episodes']:
                 episode_padded = format(int(episode['Episode']), '02')
