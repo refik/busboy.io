@@ -246,7 +246,7 @@ def get_seasons(imdb_id, seasons):
         }).json()
 
         time.sleep(0.5)
-        
+
         if 'Episodes' in response.keys():
             for episode in response['Episodes']:
                 episode_padded = format(int(episode['Episode']), '02')
