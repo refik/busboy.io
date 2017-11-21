@@ -227,7 +227,8 @@ def get_torrent(imdb_id):
         'token': token,
         'mode': 'search',
         'search_imdb': imdb_id,
-        'limit': '100'
+        'limit': '100',
+        'sort': 'seeders'
     })
 
     torrents = response.json()['torrent_results']
