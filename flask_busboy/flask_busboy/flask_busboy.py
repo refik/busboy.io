@@ -41,10 +41,17 @@ def close_db(error):
         g.sqlite_db.close()
 
 def search_title_omdb(title):
-    response = requests.get("https://www.omdbapi.com", params={
-        'apikey': '31eec4b0',
-        's': title
-    })
+    try:
+        response = requests.get("https://www.omdbapi.com", params={
+            'apikey': '31eec4b0',
+            's': title
+        }, timeout=3)
+    except:
+        time.sleep(2)
+        response = requests.get("https://www.omdbapi.com", params={
+            'apikey': '31eec4b0',
+            's': title
+        }, timeout=3)
 
     title_list = response.json()['Search']
 
