@@ -11,7 +11,7 @@ $("#add-to-transfers").click(function(event){
         .toArray()
         .join(',')
 
-    if(title_type == 'series') {
+    if(title_type != 'series') {
         $(this).attr("href", "/add/" + title_id)
     } else {
         if(seasons == '') {
