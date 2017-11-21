@@ -231,7 +231,7 @@ def get_torrent(imdb_id):
     })
 
     torrents = response.json()['torrent_results']
-    return torrents[::-1]
+    return torrents
 
 def get_seasons(imdb_id, seasons):
     db = get_db()
