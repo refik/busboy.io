@@ -45,7 +45,7 @@ def search_title_omdb(title):
         response = requests.get("https://www.omdbapi.com", params={
             'apikey': 'e2605a26',
             's': title
-        }, timeout=3)
+        }, timeout=6)
     except:
         time.sleep(2)
         response = requests.get("https://www.omdbapi.com", params={
@@ -71,7 +71,7 @@ def get_title_omdb(imdb_id):
         response = requests.get("https://www.omdbapi.com", params={
             'apikey': 'e2605a26',
             'i': imdb_id
-        }, timeout=3)
+        }, timeout=6)
     except:
         response = requests.get("https://www.omdbapi.com", params={
             'apikey': 'e2605a26',
@@ -284,7 +284,7 @@ def get_seasons(imdb_id, seasons):
             'apikey': 'e2605a26',
             'i': imdb_id,
             'Season': season
-        }, timeout=6).json()
+        }, timeout=7).json()
 
         time.sleep(0.5)
 
