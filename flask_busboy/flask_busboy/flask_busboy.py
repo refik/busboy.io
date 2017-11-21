@@ -321,22 +321,21 @@ def file_to_episode(username, file_id, imdb_id, title_file_id):
     season_file = find_or_create_file(client.File.list(parent_id=title_file_id), "Season " + season, title_file)
 
     videos = [file for file in files if file.file_type == 'VIDEO' and re.search('S[0-9]{2}E[0-9]{2}', file.name.upper())]
-    ep_key = [re.search('S[0-9]{2}E[0-9]{2}', video.name.upper()).group(0) for video in videos]
+    ep_keys = [re.search('S[0-9]{2}E[0-9]{2}', video.name.upper()).group(0) for video in videos]
 
     cursor = db.execute('select episode_denormalized, episode_title from episode where title_imdb_id=?', [imdb_id]).fetchall()
     episode_dict = dict([(r[0], r[0][4:6] + ' - ' + r[1]) for r in cursor])
 
-    torrent_episodes = ep_key.keys()
     db_episodes = episode_dict.keys()
 
-    for torrent_episode in torrent_episodes:
-        if torrent_episode not in db_episodes:
-            episode_dict[torrent_episode] = torrent_episode[1:3]
+    for ep_key in ep_keys:
+        if ep_key not in db_episodes:
+            episode_dict[ep_key] = ep_key[1:3]
 
-    ep_good_names = [episode_dict[key] for key in ep_key]
+    ep_good_names = [episode_dict[key] for key in ep_keys]
 
     for i in range(len(videos)):
-        video = videos[i].rename(ep_good_names[i])
+        videos[i].rename(ep_good_names[i])
         videos[i].move(season_file.id)
 
     file.delete()
