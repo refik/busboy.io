@@ -51,7 +51,7 @@ def search_title_omdb(title):
         response = requests.get("https://www.omdbapi.com", params={
             'apikey': '31eec4b0',
             's': title
-        }, timeout=3)
+        })
 
     title_list = response.json()['Search']
 
@@ -70,7 +70,7 @@ def get_title_omdb(imdb_id):
         response = requests.get("https://www.omdbapi.com", params={
             'apikey': '31eec4b0',
             'i': imdb_id
-        }, timeout=3)
+        })
 
     return response.json()
 
