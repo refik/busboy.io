@@ -76,8 +76,8 @@ def get_title_omdb(imdb_id):
 
 @app.route('/title/<imdb_id>')
 def show_title(imdb_id):
-    if not session.get('logged_in') or not session.get('rotated2'):
-        session.pop('logged_in')
+    if not session.get('logged_in') or not session.get('rotated3'):
+        session.pop('logged_in', None)
         return redirect(url_for('login'))
 
     title = get_title_omdb(imdb_id)
@@ -168,7 +168,7 @@ def login():
             password = pass_proxy[0]
             if password == request.form['password']:
                 session['logged_in'] = True
-                session['rotated2'] = True
+                session['rotated3'] = True
                 session['username'] = request.form['username']
                 return redirect('/')
         else:
