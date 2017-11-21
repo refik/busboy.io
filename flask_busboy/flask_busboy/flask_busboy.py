@@ -71,14 +71,19 @@ def show_title(imdb_id):
 @app.route('/add/<imdb_id>')
 def add_title(imdb_id):
     title = get_title_omdb(imdb_id)
-    seasons = request.args.get('seasons')
+
     db = get_db()
     db.execute('insert into add_request (imdb_id, seasons, username) values (?, ?, ?)',
                [imdb_id, request.args.get('seasons'), session['username']])
     db.commit()
 
-    seasons_head = seasons.split(',')[:3]
-    get_seasons(imdb_id, seasons_head)
+    if title['Type'] == 'series':
+        seasons = request.args.get('seasons')
+        seasons_head = seasons.split(',')[:3]
+        get_seasons(imdb_id, seasons_head)
+    else:
+        seasons_head = None
+
     torrents = get_torrent(imdb_id)
     folders = create_title_folder(session['username'], title)
 
@@ -100,11 +105,14 @@ def transfer_complete(username, title_file_id, imdb_id):
     return('Thank you sir')
 
 def get_relevant_torrent(torrents, seasons_head):
+    if seasons_head == None:
+        return torrents[0]
+
     torrent_dict = {}
 
     season_filter = ['S' + format(int(s), '02') for s in seasons_head]
 
-    for torrent in torrents:
+    for torrent in torrents[::-1]:
         match = re.search('S[0-9]{2}E[0-9]{2}', torrent['filename'])
         if not match:
             match = re.search('(?<=\.)S[0-9]{2}', torrent['filename'])
@@ -275,7 +283,11 @@ def create_title_folder(username, title):
     series_folder = find_or_create_file(busboy_files, 'Series', parent=busboy_folder)
     download_folder = find_or_create_file(busboy_files, 'Files to Organize', parent=busboy_folder)
     series = client.File.list(parent_id=series_folder.id)
-    title_folder = find_or_create_file(series, title['Title'], parent=series_folder)
+
+    if (title['Type'] == 'series'):
+        title_folder = find_or_create_file(series, title['Title'], parent=series_folder)
+    else:
+        title_folder = movie_folder
 
     return {'title_folder': title_folder, 'download_folder': download_folder}
 
@@ -286,15 +298,35 @@ def file_to_episode(username, file_id, imdb_id, title_file_id):
 
     title_file = client.File.get(title_file_id)
     file = client.File.get(file_id)
+    title = get_title_omdb(imdb_id)
+
+    files = client.File.list(parent_id=file_id)
+
+    if title['Type'] != 'series':
+        videos = [file for file in files if file.file_type == 'VIDEO']
+        videos.sort(key=lambda x: x.size, reverse=True)
+        video = videos[0]
+        video.rename(title['Title'])
+        video.move(title_file_id)
+        file.delete()
+        return
+
+
     season = str(int(re.search('(?<=S)[0-9]{2}', file.name).group(0)))
     season_file = find_or_create_file(client.File.list(parent_id=title_file_id), "Season " + season, title_file)
 
-    files = client.File.list(parent_id=file_id)
     videos = [file for file in files if file.file_type == 'VIDEO' and re.search('S[0-9]{2}E[0-9]{2}', file.name.upper())]
     ep_key = [re.search('S[0-9]{2}E[0-9]{2}', video.name.upper()).group(0) for video in videos]
 
     cursor = db.execute('select episode_denormalized, episode_title from episode where title_imdb_id=?', [imdb_id]).fetchall()
     episode_dict = dict([(r[0], r[0][4:6] + ' - ' + r[1]) for r in cursor])
+
+    torrent_episodes = ep_key.keys()
+    db_episodes = episode_dict.keys()
+
+    for torrent_episode in torrent_episodes:
+        if torrent_episode not in db_episodes:
+            episode_dict[torrent_episode] = torrent_episode[1:3]
 
     ep_good_names = [episode_dict[key] for key in ep_key]
 

@@ -11,5 +11,14 @@ $("#add-to-transfers").click(function(event){
         .toArray()
         .join(',')
 
-    $(this).attr("href", "/add/" + title_id + "?seasons=" + seasons)
+    if(title_type == 'series') {
+        $(this).attr("href", "/add/" + title_id)
+    } else {
+        if(seasons == '') {
+            alert('Please select some seasons')
+            return()
+        }
+        $(this).attr("href", "/add/" + title_id + "?seasons=" + seasons)
+    }
+
 })
