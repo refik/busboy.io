@@ -3,21 +3,26 @@
 {% block body %}
 {{ query }}
     <div class="container" id="title-list">
-  {% for title in title_list %}
+        {% if title_list|length == 0 %}
+        <h1>Sorry, no titles found.</h1>
+        {% else %}
 
-    <div class="row">
-    <div class="col-2">
-    <img src="{{ title['Poster'] }}" alt="">
-    </div>
-    <div class="col-10">
-        <p style="margin: 10px 0px 0px 0px">
-            <a href="/title/{{ title['imdbID'] }}" style="text-decoration: underline;">{{ title['Title'] }}</a>
-        </p>
-        <p style="text-transform: capitalize; font-style: italic; color: gainsboro">{{ title['Type'] }}, {{ title['Year'] }}</p>
-    </div>
-    </div>
+              {% for title in title_list %}
 
-  {% endfor %}
+                <div class="row">
+                <div class="col-2">
+                <img src="{{ title['Poster'] }}" alt="">
+                </div>
+                <div class="col-10">
+                    <p style="margin: 10px 0px 0px 0px">
+                        <a href="/title/{{ title['imdbID'] }}" style="text-decoration: underline;">{{ title['Title'] }}</a>
+                    </p>
+                    <p style="text-transform: capitalize; font-style: italic; color: gainsboro">{{ title['Type'] }}, {{ title['Year'] }}</p>
+                </div>
+                </div>
+
+              {% endfor %}
+        {% endif %}
     </div>
 {% endblock %}
 

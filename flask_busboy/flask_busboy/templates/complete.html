@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1>The wheels are in motion, check the "busboy" folder under your files.</h1>
+{% if found_torrents %}
+<h1>The wheels are in motion.  When complete, files will be <a class="badge badge-warning" style="text-shadow:none;" href="{{ title_folder_link }}">here</a>.</h1>
+
+<h6 style="margin-top:30px;">If you lose the link, you can always check the folder <a class="badge badge-light" style="text-shadow:none;" href="{{ busboy_folder_link }}">busboy</a> under your files.</h6>
+{% else %}
+<h1>Sorry, no link associated with that title found.</h1>
+{% endif %}
 {% endblock %}

@@ -53,7 +53,13 @@ def search_title_omdb(title):
             's': title
         })
 
-    title_list = response.json()['Search']
+
+    title_resp = response.json()
+
+    if 'Search' not in title_resp:
+        return []
+
+    title_list = title_resp['Search']
 
     # Filter movie and series
     title_list = [title for title in title_list if title['Type'] in ['movie', 'series']]
@@ -83,6 +89,10 @@ def show_title(imdb_id):
     title = get_title_omdb(imdb_id)
     return render_template('title.html', title=title)
 
+@app.errorhandler(500)
+def error_page(error):
+    return render_template('error.html')
+
 @app.route('/add/<imdb_id>')
 def add_title(imdb_id):
     title = get_title_omdb(imdb_id)
@@ -100,6 +110,10 @@ def add_title(imdb_id):
         seasons_head = None
 
     torrents = get_torrent(imdb_id)
+
+    if len(torrents) == 0:
+        return render_template('complete.html', found_torrents=False)
+
     folders = create_title_folder(session['username'], title)
 
     download_folder = folders['download_folder']
@@ -112,7 +126,8 @@ def add_title(imdb_id):
             parent_id=download_folder.id,
             callback_url='http://' + request.environ['HTTP_HOST'] + '/transfer-complete/' + session['username'] + '/' + str(title_folder.id) + '/' + imdb_id)
 
-    return render_template('complete.html')
+    return render_template('complete.html', found_torrents=True, title_folder_link="https://app.put.io/files/" + str(title_folder.id),
+                           busboy_folder_link="https://app.put.io/files/" + str(download_folder.parent_id))
 
 @app.route('/transfer-complete/<username>/<int:title_file_id>/<imdb_id>', methods = ['POST'])
 def transfer_complete(username, title_file_id, imdb_id):
@@ -243,6 +258,9 @@ def get_torrent(imdb_id, retry=False, token=None):
     if 'torrent_results' not in json and not retry:
         time.sleep(2)
         return get_torrent(imdb_id, True, token)
+
+    if 'torrent_results' not in json:
+        return []
 
     torrents = json['torrent_results']
     return torrents
